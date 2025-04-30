@@ -1,0 +1,7 @@
+{% for user in params.users %}
+CREATE ROLE IF NOT EXISTS {{ user }} LOGIN PASSWORD 'oracle';
+GRANT dataengineer TO {{ user }};
+GRANT USAGE ON SCHEMA hospital TO {{ user }};
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA hospital TO {{ user }};
+ALTER DEFAULT PRIVILEGES IN SCHEMA hospital GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {{ user }};
+{% endfor %}

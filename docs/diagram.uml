@@ -1,0 +1,40 @@
+@startuml
+skinparam linetype ortho
+skinparam componentStyle rectangle
+skinparam shadowing true
+skinparam nodeBorderThickness 1
+
+title "Data Engineering Project MVP"
+actor engineer
+component "Host" as host {
+folder shared-volume as volume{
+    file "source.csv" as csv
+    file "setup-db.sh" as setupdb
+    file "*.sql" as sqlscripts
+}
+component "Docker Network (hc-network)" as Network {
+
+  component "Orchestrator" as Orchestrator {
+  }
+
+ component "Data Processing" as DataProcessing {
+    [Liquibase] as Liquibase
+    [DBT] as DBT
+    [SQLLoader] as sqlloader
+  }
+  database "local-storage" as storage
+  [Orchestrator] --> DataProcessing : "Initiate triggers ELT DAG"
+  [Liquibase] --> storage : "Schema managment"
+  [DBT] --> storage : "Data transformations"
+  [setupdb] ..> storage : "Setup database"
+  [sqlloader] --> csv : "Extract data"
+  [sqlloader] --> storage : "Load data"
+  [engineer] ..> setupdb : "1. Run setup-db script (sqlcl)"
+  [engineer] ..> Orchestrator : "2.Initiate batch DAG (Airflow UI)"
+}  
+}
+
+
+@enduml
+
+

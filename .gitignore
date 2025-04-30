@@ -1,0 +1,14 @@
+airflow/logs/
+*.csv
+*.zip
+*.jar
+*.swp
+*.pyc
+# py
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+env/
+venv/
+ENV/

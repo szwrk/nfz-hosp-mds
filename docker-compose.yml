@@ -1,0 +1,183 @@
+version: '3.9'
+networks:
+  default:
+    external:
+      name: hc-network
+
+services:
+  utils:
+    build:
+      context: ./img/utils
+      args:
+        SSH_KEY: ${SSH_KEY}
+    command: >
+        sh -c "mkdir -p /home/utils/.ssh &&
+             echo '${SSH_KEY}' >> /home/utils/.ssh/authorized_keys &&
+             chmod 700 /home/utils/.ssh &&
+             chmod 600 /home/utils/.ssh/authorized_keys &&
+             chown utils:utils /home/utils/.ssh /home/utils/.ssh/authorized_keys &&
+             /usr/sbin/sshd -D"
+    image: liquibase_img
+    container_name: utils
+    volumes:
+      - ./app:/app
+
+  postgres_dwh:
+    image: postgres:17
+    container_name: postgres_dwh
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${POSTGRES_ADMIN_NAME}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASS}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    # volumes:
+      # - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    container_name: adminer_ui
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres_dwh
+
+  oracle-hc:
+    image: gvenzl/oracle-free:latest
+    container_name: oracle-hc
+    ports:
+      - "1521:1521"
+    environment:
+      APP_USER: arek
+      APP_USER_PASSWORD: oracle
+      ORACLE_PASSWORD: oracle
+    restart: always
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+  x-airflow-common:
+    &airflow-common
+    image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:latest}
+    environment:
+      &airflow-common-env
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW__WEBSERVER__SECRET_KEY}
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
+      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+      AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
+      AIRFLOW_CONN_UTILS: ${AIRFLOW_CONN_UTILS}
+      AIRFLOW_CONN_POSTGRES_DWH: ${AIRFLOW_CONN_POSTGRES_DWH}
+      AIRFLOW__LOGGING__REMOTE_LOGGING: 'False'
+      _PIP_ADDITIONAL_REQUIREMENTS: apache-airflow-providers-postgres==5.6.0
+      PYTHONWARNINGS: ignore::DeprecationWarning
+    volumes:
+      - ./airflow:/opt/airflow
+    user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    environment:
+      <<: *airflow-common-env
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    volumes:
+      - ./airflow:/opt/airflow
+      - ./app:/app
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    volumes:
+      - ./airflow:/opt/airflow
+      - ./app:/app
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-arek}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+
+  flower:
+    <<: *airflow-common
+    command: celery flower
+    ports:
+      - 5555:5555
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+
+volumes:
+  postgres-db-volume:
+  oracle-data:
+  pgdata_dwh:

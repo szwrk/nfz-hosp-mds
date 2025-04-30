@@ -1,0 +1,24 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="arek@wilamowski.net">
+        <createTable tableName="hospitalizacje_raw" schemaName="hospital">
+            <column name="rok" type="VARCHAR(50)"/>
+            <column name="miesiac" type="VARCHAR(50)"/>
+            <column name="ow_nfz" type="VARCHAR(50)"/>
+            <column name="nip_podmiotu" type="VARCHAR(50)"/>
+            <column name="kod_produktu_kontraktowego" type="VARCHAR(50)"/>
+            <column name="kod_produktu_jednostkowego" type="VARCHAR(50)"/>
+            <column name="kod_trybu_przyjecia" type="VARCHAR(50)"/>
+            <column name="kod_trybu_wypisu" type="VARCHAR(50)"/>
+            <column name="plec_pacjenta" type="VARCHAR(50)"/>
+            <column name="grupa_wiekowa_pacjenta" type="VARCHAR(50)"/>
+            <column name="przedzial_dlugosci_trwania_hospitalizacji" type="VARCHAR(50)"/>
+            <column name="liczba_hospitalizacji" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
