@@ -9,6 +9,5 @@ airflow/logs/
 __pycache__/
 *.pyo
 *.pyd
-env/
 venv/
-ENV/
+*.env

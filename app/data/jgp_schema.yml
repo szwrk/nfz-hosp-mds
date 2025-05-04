@@ -1,0 +1,18 @@
+﻿columns:
+  - name: group_code
+    description: JGP group code representing a category
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: product_name
+    description: NFZ product code assigned to a specific healthcare procedure
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: name
+    description:  Official name or label of the procedure group
+    meta:
+      variable_type: categorical
+      scale_type: nominal

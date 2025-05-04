@@ -1,0 +1,91 @@
+﻿columns:
+  - name: year 
+    name_original: rok
+    description: Calendar year of hospitalization
+    meta:
+      variable_type: categorical
+      scale_type: ordinal
+
+  - name: month 
+    name_original: miesiac
+    description: Calendar month of hospitalization
+    meta:
+      variable_type: categorical
+      scale_type: ordinal
+
+  - name: nfz_department_code 
+    name_original: ow_nfz
+    reference_table:
+    description: Code of the regional NFZ department
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: institution_nip_code 
+    name_original: nip_podmiotu
+    reference_table: Tax id number (NIP) of the healthcare provider
+    description:
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: nfz_contract_code 
+    name_original: kod_produktu_kontraktowego
+    reference_table:
+    description: Code of the NFZ contract
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: nfz_service_code 
+    name_original: kod_produktu_jednostkowego
+    description:  Code of the individual healthcare service unit
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: admission_code 
+    name_original: kod_trybu_przyjecia
+    reference_table: Admission mode code
+    description:
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: discharge_code 
+    name_original: kod_trybu_wypisu
+    reference_table:
+    description: Discharge mode code
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: patient_gender 
+    name_original: plec_pacjenta
+    description: Patient's gender
+    meta:
+      variable_type: categorical
+      scale_type: nominal
+
+  - name: age_category 
+    name_original: grupa_wiekowa_pacjenta
+    description: Patient's age group
+    meta:
+      variable_type: categorical
+      scale_type: ordinal
+
+  - name: hosp_length_in_day_category 
+    name_original: przedzial_dlugosci_trwania_hospitalizacji
+    unit: days
+    description: Range of hospitalization duration in days
+    meta:
+      variable_type: categorical
+      scale_type: ordinal
+
+  - name: hospitalization_count 
+    name_original: liczba_hospitalizacji
+    description: Number of hospitalizations
+    unit: count
+    meta:
+      variable_type: quantitative
+      scale_type: discrete
