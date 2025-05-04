@@ -1,12 +1,12 @@
 ﻿# Healthcare Data Project
 ## About
-Full selfhosted infrastructure.
-Full data engineering stack
+End-to-end data engineering project based on Polish healthcare hospitalization data (21M+ records). Fully self-hosted infrastructure with modular architecture and reproducible pipelines.
 
-## Docs
+## Project Documentation
 [Open Docs](docs/docs.md)
+[Glossary](docs/glossary.md)
 
-## Data Enginnering Features
+## Data Engineering Features
 - Unit tests (dbt)
 - Data Dictionary (dbt)
 - Lineage (Airflow, dbt)
@@ -41,9 +41,17 @@ Full data engineering stack
     - dbt
     - Postgres
 
+## Data Layers
+- Raw CSV → original flat files
+- Stage → raw data loaded into Postgres
+- Core models → dbt transformations
+    - Bronze → initial cleaning & standardization
+    - Silver→ cleaned & structured models
+    - Gold  aggregated or business-ready models
+
 ## Analyzing & Visualisation
 - File Validation
-     - JupiterNotebook & bash
+     - JupyterNotebook & bash
 - Exploratory Data Analysis
     - First EDA, explore raw CSV (JupiterNb, DuckDb, SQL)
     - Second EDA, after loading into DWH, histograms (JupiterNb, Pandas, Seaborn)
@@ -63,5 +71,16 @@ Full data engineering stack
 - Python
 - bash
 
-## Books
---todo
+## References
+**Books**
+[ PL ]
+- Inżynieria danych w praktyce, J. Reis
+- Zaawansowana Analiza Danych, G. Mount
+- SQL for Data Analysis, C. Tanimura
+
+**Video courses**
+- DBT 1x
+- Airflow 2x
+
+**Others**
+:)
