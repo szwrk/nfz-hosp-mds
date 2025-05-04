@@ -3,8 +3,8 @@
 End-to-end data engineering project based on Polish healthcare hospitalization data (21M+ records). Fully self-hosted infrastructure with modular architecture and reproducible pipelines.
 
 ## Project Documentation
-[Open Docs](docs/docs.md)
-[Glossary](docs/glossary.md)
+- [Open Docs](docs/docs.md)
+- [Glossary](docs/glossary.md)
 
 ## Data Engineering Features
 - Unit tests (dbt)
@@ -13,7 +13,7 @@ End-to-end data engineering project based on Polish healthcare hospitalization d
 
 ## All Components & Tools
 **Infra**
-- [x] Docker-Compose 
+- Docker-Compose 
     - Containers
         - Apache Airflow,
         - Apache Superset
@@ -29,25 +29,25 @@ End-to-end data engineering project based on Polish healthcare hospitalization d
 - Linux Debian
 
 **Orchestration**
-- [x] Apache Airflow
-    - DAG 1
+- Apache Airflow
+    - DAG #1, Pipeline
         - SSHOperators
         - BranchOperators
         - PythonOperators
         - etc
 **ETL**
-- [x] Extraction & Load, PySpark
-- [x] Transformation,
+- Extraction & Load, PySpark
+- Transformation,
     - dbt
     - Postgres
 
 ## Data Layers
-- Raw CSV → original flat files
-- Stage → raw data loaded into Postgres
-- Core models → dbt transformations
-    - Bronze → initial cleaning & standardization
-    - Silver→ cleaned & structured models
-    - Gold  aggregated or business-ready models
+- Raw CSV, original flat files
+- Stage, raw data loaded into Postgres
+- Core models,  dbt transformations
+    - Bronze,  initial cleaning & standardization
+    - Silver, cleaned & structured models
+    - Gold,  aggregated or business-ready models
 
 ## Analyzing & Visualisation
 - File Validation
