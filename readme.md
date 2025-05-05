@@ -64,6 +64,7 @@ End-to-end data engineering project based on Polish healthcare hospitalization d
 **CI/CD & Automation**   
 - Makefile
 - GIT
+    - hooks pre-commit & pre-push
 - Liquibase
 
 **Scripts**

@@ -1,3 +1,5 @@
+source_env:
+	source ~/etl/app/env/.env
 clean-dwh:
 	docker compose stop postgres_dwh
 	docker compose up -d postgres_dwh
@@ -26,3 +28,16 @@ start:
 
 rebuild:
 	docker compose --env-file $(ENV_FILE) up -d --build
+
+TREE_FILE = docs/tree.md
+tree:
+	cd ~/etl && { \
+		echo '# Project Structure' > $(TREE_FILE); \
+		echo '```plaintext' >> $(TREE_FILE); \
+		tree -I '__pycache__|logs|venv|git|.idea' >> $(TREE_FILE); \
+		echo '```' >> $(TREE_FILE); \
+	}
+	cat $(TREE_FILE)
+	git add $(TREE_FILE)
+	git commit -m"chore: autorender tree"
+	
