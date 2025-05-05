@@ -32,6 +32,19 @@ RUN curl -Lo /tmp/liquibase.zip https://github.com/liquibase/liquibase/releases/
 
 ENV PATH="/opt/liquibase:$PATH"
 
+# Py
+RUN apt-get update && apt-get install -y python3 python3-pip && apt-get clean
+# Spark
+ENV SPARK_VERSION=3.5.5
+ENV SPARK_ARCHIVE=spark-${SPARK_VERSION}-bin-hadoop3-scala2.13
+ENV SPARK_HOME=/opt/spark
+RUN curl -fSL https://downloads.apache.org/spark/spark-${SPARK_VERSION}/${SPARK_ARCHIVE}.tgz -o /tmp/spark.tgz && \
+    tar -xzf /tmp/spark.tgz -C /opt && \
+    ln -s /opt/${SPARK_ARCHIVE} ${SPARK_HOME} && \
+    rm /tmp/spark.tgz
+
+ENV PATH=$SPARK_HOME/bin:$PATH
+
 # Oracle Client
 COPY /tmp/instantclient-basic.zip /tmp/
 COPY /tmp/instantclient-tools.zip /tmp/
