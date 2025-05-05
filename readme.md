@@ -5,6 +5,7 @@ End-to-end data engineering project based on Polish healthcare hospitalization d
 ## Project Documentation
 - [Open Docs](docs/docs.md)
 - [Glossary](docs/glossary.md)
+- [Structure tree](docs/tree.md)
 
 ## Data Engineering Features
 - Unit tests (dbt)
