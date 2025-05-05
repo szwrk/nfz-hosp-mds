@@ -1,5 +1,6 @@
 source_env:
-	source ~/etl/app/env/.env
+	. ~/etl/app/env/.env
+
 clean-dwh:
 	docker compose stop postgres_dwh
 	docker compose up -d postgres_dwh
