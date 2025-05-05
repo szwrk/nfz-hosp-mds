@@ -39,3 +39,6 @@ alter pluggable database datamart open;
 select table_name from all_tables where owner = 'DM_NFZHOSP';
 desc DM_NFZHOSP.HOSPITALIZACJE_CSV;
 .
+
+## Spark
+spark-submit --name "test pg" --jars /app/db/postgresql.jar /app/pipeline/extract.py
