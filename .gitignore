@@ -4,6 +4,8 @@ airflow/logs/
 *.jar
 *.swp
 *.pyc
+*.pid
+*.old
 # py
 *.pyc
 __pycache__/
