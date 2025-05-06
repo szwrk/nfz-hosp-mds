@@ -42,3 +42,9 @@ tree:
 	git add $(TREE_FILE)
 	git commit -m"chore: autorender tree"
 	
+validate-schema:
+	docker exec utils bash -c "cd /app/db/changelog && liquibase validate"  2>&1 | tail -n +34
+
+update-schema:
+	docker exec utils bash -c "cd /app/db/changelog && docker exec utils liquibase update"  2>&1 | tail -n +34
+
