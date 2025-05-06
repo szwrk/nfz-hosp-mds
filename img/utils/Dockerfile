@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-ENV LIQUIBASE_VERSION=4.23.2
+ENV MY_LIQUIBASE_VERSION=4.23.2
 ENV ORACLE_INSTANT_CLIENT_VERSION=23.6.0.24.10
 # SSH
 RUN apt-get update && apt-get install -y \
@@ -25,7 +25,7 @@ RUN useradd -m -s /bin/bash ${USER}
 RUN chown -R  ${USER}:${USER} /etc/ssh
 
 # Liquibase
-RUN curl -Lo /tmp/liquibase.zip https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.zip \
+RUN curl -Lo /tmp/liquibase.zip https://github.com/liquibase/liquibase/releases/download/v${MY_LIQUIBASE_VERSION}/liquibase-${MY_LIQUIBASE_VERSION}.zip \
     && unzip /tmp/liquibase.zip -d /opt/liquibase \
     && ln -s /opt/liquibase/liquibase /usr/local/bin/liquibase \
     && rm /tmp/liquibase.zip
