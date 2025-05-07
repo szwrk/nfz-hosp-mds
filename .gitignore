@@ -6,6 +6,7 @@ airflow/logs/
 *.pyc
 *.pid
 *.old
+todo.md
 # py
 *.pyc
 __pycache__/
