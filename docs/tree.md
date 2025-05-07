@@ -28,6 +28,8 @@
 │   │   ├── changelog
 │   │   │   ├── changelog.xml
 │   │   │   ├── changeset-01-create-raw-hospitalizations.xml
+│   │   │   ├── changeset-02-create-etl-meta.xml
+│   │   │   ├── changeset-03-update-raw-hospitalizations.xml
 │   │   │   └── liquibase.properties
 │   │   ├── postgresql.jar
 │   │   └── sql
@@ -56,7 +58,8 @@
 │           └── instantclient-tools.zip
 ├── Makefile
 ├── notes.md
-└── readme.md
+├── readme.md
+└── todo.md
 
-19 directories, 38 files
+19 directories, 41 files
 ```
