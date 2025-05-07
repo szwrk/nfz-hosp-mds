@@ -1,0 +1,26 @@
+﻿<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2" author="arek@wilamowski.net">
+
+        <addColumn tableName="raw_hospitalizations" schemaName="hospital">
+            <column name="id_ingestion" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint 
+        baseTableName="raw_hospitalizations"
+        baseColumnNames="id_ingestion"
+        referencedTableName="etl_ingestion_log"
+        referencedColumnNames="id_ingestion"
+        constraintName="fk_raw_ingestion"
+        baseTableSchemaName="hospital"
+        referencedTableSchemaName="hospital"/>
+
+    </changeSet>
+</databaseChangeLog>

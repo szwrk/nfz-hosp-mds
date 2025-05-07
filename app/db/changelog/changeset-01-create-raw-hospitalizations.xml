@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="arek@wilamowski.net">
-        <createTable tableName="hospitalizacje_raw" schemaName="hospital">
+        <createTable tableName="raw_hospitalizations" schemaName="hospital">
             <column name="rok" type="VARCHAR(50)"/>
             <column name="miesiac" type="VARCHAR(50)"/>
             <column name="ow_nfz" type="VARCHAR(50)"/>

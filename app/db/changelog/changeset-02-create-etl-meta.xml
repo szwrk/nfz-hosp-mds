@@ -1,0 +1,37 @@
+﻿<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2" author="arek@wilamowski.net">
+
+        <createTable tableName="etl_file_fingerprint" schemaName="hospital">
+            <column name="id_fingerprint" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="file_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="etl_ingestion_log" schemaName="hospital">
+            <column name="id_ingestion" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="id_fingerprint" type="INTEGER">
+                <constraints nullable="false" foreignKeyName="fk_ingestion_source"
+                             references="hospital.etl_file_fingerprint(id_fingerprint)"/>
+            </column>
+            <column name="loaded_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_path" type="VARCHAR(200)"/>
+        </createTable>
+
+    </changeSet>
+</databaseChangeLog>
