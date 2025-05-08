@@ -46,5 +46,10 @@ validate-schema:
 	docker exec utils bash -c "cd /app/db/changelog && liquibase validate"  2>&1 | tail -n +34
 
 update-schema:
-	docker exec utils bash -c "cd /app/db/changelog && docker exec utils liquibase update"  2>&1 | tail -n +34
+	docker exec utils bash -c "cd /app/db/changelog && liquibase update"  2>&1 | tail -n +34
 
+clear-checksums:
+	docker exec utils bash -c "cd /app/db/changelog && liquibase clearCheckSums"
+
+connect-pg:
+	docker exec -ti postgres_dwh bash -c "psql -h localhost -p 5432 -U sysaw -d datamart"
