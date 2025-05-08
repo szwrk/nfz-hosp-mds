@@ -4,6 +4,7 @@ from airflow.operators.bash import BashOperator
 from airflow.exceptions import AirflowFailException
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.operators.python import ShortCircuitOperator
+from airflow.operators.python import BranchPythonOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.ssh.operators.ssh import SSHOperator
 from airflow.utils.task_group import TaskGroup
@@ -60,8 +61,14 @@ def fail_if_db_already_initialized(**kwargs):
             )
     return True
 
+def setup_branch(**kwargs):
+    if kwargs['dag_run'].conf.get('run_initial_db_setup', True):
+        return "setup_db_group.start_setup_db"
+    else:
+        return "skip_setup"
+
 with DAG(
-    "0_etl_start",
+    "0_pipeline_etl",
     default_args={
         "owner": "Airflow",
         "retries": 0,
@@ -105,16 +112,21 @@ with DAG(
             ssh_conn_id="utils",
             command='echo "Connected to SSH"',
         )     
+
+    choose_optional_setup = BranchPythonOperator(
+        task_id="choose_optional_setup",
+        python_callable=setup_branch,        
+    )
     
-    fail_on_redundant_setup_request = PythonOperator (
-        task_id="fail_on_redundant_setup_request",
-        python_callable=fail_if_db_already_initialized,
-    )  
-   
+
     with TaskGroup("setup_db_group") as setup_db_group:
      
         start_setup_db = EmptyOperator(task_id="start_setup_db")
 
+        fail_on_redundant_setup_request = PythonOperator (
+            task_id="fail_on_redundant_setup_request",
+            python_callable=fail_if_db_already_initialized,
+        )  
 
         test_list_sqls = BashOperator(task_id="test_path", bash_command="ls -lah /app/db/sql")
 
@@ -145,15 +157,16 @@ with DAG(
             postgres_conn_id="postgres_dwh",
         )
 
-        # end_setup_db = EmptyOperator(task_id="end_setup_db")
         end_setup_db = PythonOperator(
             task_id="mark_db_setup_done",
             python_callable=set_db_flag,            
         )
 
-        start_setup_db >> test_list_sqls >>config_db1 >> config_db2 >> config_db3 >> end_setup_db
+        start_setup_db >> fail_on_redundant_setup_request >> test_list_sqls >>config_db1 >> config_db2 >> config_db3 >> end_setup_db
 
-    
+    skip_setup = EmptyOperator(task_id="skip_setup")
+    join_paths = EmptyOperator(task_id="join_paths", trigger_rule="none_failed_min_one_success")
+
     with TaskGroup("staging_migration_group") as staging_migration_group:
         start_migration = EmptyOperator(task_id="start_migration")
 
@@ -168,15 +181,20 @@ with DAG(
             ssh_conn_id="utils",
             command="cd /app/db/changelog/ && liquibase update",
         )
+
         end_migration = EmptyOperator(task_id="end_migration")
         start_migration >> check >> update >> end_migration
 
     end_dag = EmptyOperator(task_id="end_dag")
     
 csv >> server_healthcheck_group >> connection_check_group
-connection_check_group >> fail_on_redundant_setup_request
-fail_on_redundant_setup_request >> setup_db_group >> staging_migration_group
-fail_on_redundant_setup_request >> staging_migration_group
-staging_migration_group >> end_dag
+connection_check_group >> choose_optional_setup
+choose_optional_setup >> start_setup_db
+choose_optional_setup >> skip_setup
+skip_setup >> join_paths
+end_setup_db >> join_paths
+join_paths >> start_migration
+join_paths >> start_migration
+end_migration >> end_dag
 
 
